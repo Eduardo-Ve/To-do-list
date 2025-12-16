@@ -1,15 +1,759 @@
 ﻿<Window x:Class="To_do_list.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:To_do_list"
-        mc:Ignorable="d"
-        Title="MainWindow" d:DesignWidth="794.257">
-    <WrapPanel x:Name="Principal" Height="432" Orientation="Vertical" >
-        <WrapPanel.Effect>
-            <BlurEffect/>
-        </WrapPanel.Effect>
-    </WrapPanel>
+        Height="700" Width="1200"
+        WindowStartupLocation="CenterScreen"
+        Background="{DynamicResource AppBg}"
+        FontFamily="Segoe UI"
+        TextOptions.TextFormattingMode="Display"
+        AllowsTransparency="True"
+        WindowStyle="None"
+        ResizeMode="CanResize">
 
+    <Window.Resources>
+
+        <!-- Color Palette - Más profesional y armoniosa -->
+        <SolidColorBrush x:Key="AppBg" Color="#0d1117"/>
+        <SolidColorBrush x:Key="PanelBg" Color="#161b22"/>
+        <SolidColorBrush x:Key="CardBg" Color="#1c2128"/>
+        <SolidColorBrush x:Key="CardHover" Color="#21262d"/>
+        <SolidColorBrush x:Key="ControlBg" Color="#0d1117"/>
+        <SolidColorBrush x:Key="ControlHover" Color="#1c2128"/>
+        <SolidColorBrush x:Key="Accent" Color="#58a6ff"/>
+        <SolidColorBrush x:Key="AccentHover" Color="#79c0ff"/>
+        <SolidColorBrush x:Key="Success" Color="#3fb950"/>
+        <SolidColorBrush x:Key="Danger" Color="#f85149"/>
+        <SolidColorBrush x:Key="TextMain" Color="#e6edf3"/>
+        <SolidColorBrush x:Key="TextMuted" Color="#7d8590"/>
+        <SolidColorBrush x:Key="Border" Color="#30363d"/>
+
+        <!-- Icons -->
+        <Geometry x:Key="IconPlus">M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z</Geometry>
+        <Geometry x:Key="IconSearch">M9.5,3A6.5,6.5 0 0,1 16,9.5C16,11.11 15.41,12.59 14.44,13.73L14.71,14H15.5L20.5,19L19,20.5L14,15.5V14.71L13.73,14.44C12.59,15.41 11.11,16 9.5,16A6.5,6.5 0 0,1 3,9.5A6.5,6.5 0 0,1 9.5,3M9.5,5C7,5 5,7 5,9.5C5,12 7,14 9.5,14C12,14 14,12 14,9.5C14,7 12,5 9.5,5Z</Geometry>
+        <Geometry x:Key="IconTrash">M9,3V4H4V6H5V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V6H20V4H15V3H9M7,6H17V19H7V6M9,8V17H11V8H9M13,8V17H15V8H13Z</Geometry>
+        <Geometry x:Key="IconMore">M16,12A2,2 0 0,1 18,10A2,2 0 0,1 20,12A2,2 0 0,1 18,14A2,2 0 0,1 16,12M10,12A2,2 0 0,1 12,10A2,2 0 0,1 14,12A2,2 0 0,1 12,14A2,2 0 0,1 10,12M4,12A2,2 0 0,1 6,10A2,2 0 0,1 8,12A2,2 0 0,1 6,14A2,2 0 0,1 4,12Z</Geometry>
+        <Geometry x:Key="IconCheck">M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z</Geometry>
+        <Geometry x:Key="IconMinimize">M5,12H19V14H5V12Z</Geometry>
+        <Geometry x:Key="IconMaximize">M6,6H18V18H6V6ZM8,8V16H16V8H8Z</Geometry>
+        <Geometry x:Key="IconClose">M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z</Geometry>
+
+
+
+        <!-- Modern ScrollBar con animaciones -->
+        <Style x:Key="ModernScrollBar" TargetType="{x:Type ScrollBar}">
+            <Setter Property="Stylus.IsFlicksEnabled" Value="false" />
+            <Setter Property="Foreground" Value="{DynamicResource Border}" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Width" Value="10" />
+            <Setter Property="Margin" Value="0,0,2,0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ScrollBar}">
+                        <Grid x:Name="GridRoot" Width="10" Background="{TemplateBinding Background}">
+                            <Track x:Name="PART_Track" IsDirectionReversed="true" Focusable="false">
+                                <Track.Thumb>
+                                    <Thumb x:Name="Thumb" Background="{DynamicResource Border}" Style="{DynamicResource ScrollThumbStyle}"/>
+                                </Track.Thumb>
+                                <Track.DecreaseRepeatButton>
+                                    <RepeatButton Command="ScrollBar.LineUpCommand" Opacity="0" Focusable="false" />
+                                </Track.DecreaseRepeatButton>
+                                <Track.IncreaseRepeatButton>
+                                    <RepeatButton Command="ScrollBar.LineDownCommand" Opacity="0" Focusable="false" />
+                                </Track.IncreaseRepeatButton>
+                            </Track>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="ScrollThumbStyle" TargetType="{x:Type Thumb}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Thumb}">
+                        <Border x:Name="scrollBorder" Background="{DynamicResource Border}" CornerRadius="5">
+                            <Border.RenderTransform>
+                                <ScaleTransform ScaleX="1" ScaleY="1"/>
+                            </Border.RenderTransform>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation Storyboard.TargetName="scrollBorder" 
+                                                          Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                                          To="#58a6ff" Duration="0:0:0.2"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.EnterActions>
+                                <Trigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation Storyboard.TargetName="scrollBorder" 
+                                                          Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                                          To="#30363d" Duration="0:0:0.2"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.ExitActions>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style TargetType="{x:Type ScrollViewer}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ScrollViewer}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <ScrollContentPresenter Grid.Column="0" />
+                            <ScrollBar Grid.Column="1" 
+                                      x:Name="PART_VerticalScrollBar" 
+                                      Value="{TemplateBinding VerticalOffset}" 
+                                      Maximum="{TemplateBinding ScrollableHeight}" 
+                                      ViewportSize="{TemplateBinding ViewportHeight}" 
+                                      Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}" 
+                                      Style="{StaticResource ModernScrollBar}"/>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- TextBlock Default Style -->
+        <Style TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{DynamicResource TextMain}"/>
+            <Setter Property="FontSize" Value="14"/>
+        </Style>
+
+        <!-- Icon Button con animaciones -->
+        <Style x:Key="IconButton" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="{DynamicResource TextMuted}"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Width" Value="36"/>
+            <Setter Property="Height" Value="36"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="bd" Background="{TemplateBinding Background}" CornerRadius="6">
+                            <Path x:Name="icon" 
+                                  Data="{Binding Content, RelativeSource={RelativeSource TemplatedParent}}" 
+                                  Fill="{TemplateBinding Foreground}" 
+                                  Stretch="Uniform" 
+                                  Width="18" Height="18"
+                                  HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <Path.RenderTransform>
+                                    <ScaleTransform ScaleX="1" ScaleY="1"/>
+                                </Path.RenderTransform>
+                            </Path>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation Storyboard.TargetName="bd" 
+                                                          Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                                          To="#1c2128" Duration="0:0:0.15"/>
+                                            <ColorAnimation Storyboard.TargetName="icon" 
+                                                          Storyboard.TargetProperty="(Path.Fill).(SolidColorBrush.Color)"
+                                                          To="#e6edf3" Duration="0:0:0.15"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.EnterActions>
+                                <Trigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation Storyboard.TargetName="bd" 
+                                                          Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                                          To="Transparent" Duration="0:0:0.15"/>
+                                            <ColorAnimation Storyboard.TargetName="icon" 
+                                                          Storyboard.TargetProperty="(Path.Fill).(SolidColorBrush.Color)"
+                                                          To="#7d8590" Duration="0:0:0.15"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.ExitActions>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="icon" Property="RenderTransform">
+                                    <Setter.Value>
+                                        <ScaleTransform ScaleX="0.92" ScaleY="0.92"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Danger Icon Button -->
+        <Style x:Key="DangerIconButton" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="{DynamicResource TextMuted}"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Width" Value="36"/>
+            <Setter Property="Height" Value="36"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="bd" Background="{TemplateBinding Background}" CornerRadius="6">
+                            <Path x:Name="icon" 
+                                  Data="{Binding Content, RelativeSource={RelativeSource TemplatedParent}}" 
+                                  Fill="{TemplateBinding Foreground}" 
+                                  Stretch="Uniform" 
+                                  Width="18" Height="18"
+                                  HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <Path.RenderTransform>
+                                    <ScaleTransform ScaleX="1" ScaleY="1"/>
+                                </Path.RenderTransform>
+                            </Path>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation Storyboard.TargetName="bd" 
+                                                          Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                                          To="#1c2128" Duration="0:0:0.15"/>
+                                            <ColorAnimation Storyboard.TargetName="icon" 
+                                                          Storyboard.TargetProperty="(Path.Fill).(SolidColorBrush.Color)"
+                                                          To="#f85149" Duration="0:0:0.15"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.EnterActions>
+                                <Trigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation Storyboard.TargetName="bd" 
+                                                          Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                                          To="Transparent" Duration="0:0:0.15"/>
+                                            <ColorAnimation Storyboard.TargetName="icon" 
+                                                          Storyboard.TargetProperty="(Path.Fill).(SolidColorBrush.Color)"
+                                                          To="#7d8590" Duration="0:0:0.15"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.ExitActions>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="icon" Property="RenderTransform">
+                                    <Setter.Value>
+                                        <ScaleTransform ScaleX="0.92" ScaleY="0.92"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Primary Button con efectos -->
+        <Style x:Key="PrimaryButton" TargetType="Button">
+            <Setter Property="Background" Value="{DynamicResource Accent}"/>
+            <Setter Property="Foreground" Value="#ffffff"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Padding" Value="16,0"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" Background="{TemplateBinding Background}" CornerRadius="6">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation Storyboard.TargetName="border" 
+                                                          Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                                          To="#79c0ff" Duration="0:0:0.15"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.EnterActions>
+                                <Trigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation Storyboard.TargetName="border" 
+                                                          Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                                          To="#58a6ff" Duration="0:0:0.15"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.ExitActions>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="RenderTransform">
+                                    <Setter.Value>
+                                        <ScaleTransform ScaleX="0.97" ScaleY="0.97"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- TextBox moderno -->
+        <Style TargetType="TextBox">
+            <Setter Property="Background" Value="{DynamicResource ControlBg}"/>
+            <Setter Property="Foreground" Value="{DynamicResource TextMain}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource Border}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="12,10"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="CaretBrush" Value="{DynamicResource Accent}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border x:Name="border" 
+                                Background="{TemplateBinding Background}" 
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="6" 
+                                Padding="{TemplateBinding Padding}">
+                            <ScrollViewer x:Name="PART_ContentHost"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="BorderBrush" Value="{DynamicResource TextMuted}"/>
+                            </Trigger>
+                            <Trigger Property="IsFocused" Value="True">
+                                <Setter TargetName="border" Property="BorderBrush" Value="{DynamicResource Accent}"/>
+                                <Setter TargetName="border" Property="Background" Value="{DynamicResource PanelBg}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- CheckBox moderno -->
+        <Style TargetType="CheckBox">
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Foreground" Value="{DynamicResource TextMain}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="CheckBox">
+                        <Grid Background="Transparent">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Border x:Name="box" Width="20" Height="20" CornerRadius="4" 
+                                    BorderBrush="{DynamicResource Border}" 
+                                    BorderThickness="2" 
+                                    Background="Transparent">
+                                <Path x:Name="check" 
+                                      Data="{StaticResource IconCheck}" 
+                                      Fill="White" 
+                                      Stretch="Uniform"
+                                      Width="12" Height="12"
+                                      Visibility="Collapsed" 
+                                      HorizontalAlignment="Center" 
+                                      VerticalAlignment="Center"/>
+                            </Border>
+                            <ContentPresenter Grid.Column="1" VerticalAlignment="Center" Margin="12,0,0,0"/>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="box" Property="Background" Value="{DynamicResource Success}"/>
+                                <Setter TargetName="box" Property="BorderBrush" Value="{DynamicResource Success}"/>
+                                <Setter TargetName="check" Property="Visibility" Value="Visible"/>
+                                <Setter Property="Foreground" Value="{DynamicResource TextMuted}"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="box" Property="BorderBrush" Value="{DynamicResource Accent}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- ListBoxItem con hover suave -->
+        <Style TargetType="ListBoxItem">
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="Margin" Value="0,0,0,8"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListBoxItem">
+                        <Border x:Name="Bd" Background="{TemplateBinding Background}" CornerRadius="8" Padding="0">
+                            <ContentPresenter />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource CardBg}"/>
+                                <Setter TargetName="Bd" Property="BorderThickness" Value="1"/>
+                                <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource Accent}"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation Storyboard.TargetName="Bd" 
+                                                          Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                                          To="#21262d" Duration="0:0:0.15"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.EnterActions>
+                                <Trigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation Storyboard.TargetName="Bd" 
+                                                          Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                                          To="Transparent" Duration="0:0:0.15"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.ExitActions>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+    </Window.Resources>
+
+    <!-- Window Chrome para ventana personalizada -->
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="40" 
+                     ResizeBorderThickness="6" 
+                     GlassFrameThickness="0"
+                     CornerRadius="12"/>
+    </WindowChrome.WindowChrome>
+
+    <Border Background="{DynamicResource AppBg}" CornerRadius="12" BorderBrush="{DynamicResource Border}" BorderThickness="1">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="20*"/>
+                <RowDefinition Height="329*"/>
+            </Grid.RowDefinitions>
+            <!-- Title Bar personalizada -->
+            <Border Grid.Row="0"
+        Background="{DynamicResource PanelBg}"
+        CornerRadius="12,12,0,0"
+        BorderBrush="{DynamicResource Border}"
+        BorderThickness="0,0,0,1">
+
+                <Grid>
+                    <TextBlock Text="Mis Notas"
+                   FontSize="13"
+                   FontWeight="SemiBold"
+                   Foreground="{DynamicResource TextMuted}"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center"/>
+
+                    <StackPanel Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    Margin="0,0,8,0">
+
+                        <Button Content="{StaticResource IconMinimize}"
+                    Width="32" Height="32"
+                    Style="{StaticResource IconButton}"
+                    WindowChrome.IsHitTestVisibleInChrome="True"
+                    Click="MinimizeWindow"/>
+
+                        <Button Content="{StaticResource IconMaximize}"
+                    Width="32" Height="32"
+                    Style="{StaticResource IconButton}"
+                    WindowChrome.IsHitTestVisibleInChrome="True"
+                    Click="MaximizeWindow"/>
+
+                        <Button Content="{StaticResource IconClose}"
+                    Width="32" Height="32"
+                    Style="{StaticResource DangerIconButton}"
+                    WindowChrome.IsHitTestVisibleInChrome="True"
+                    Click="CloseWindow"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+
+            <!-- Main Content -->
+            <Grid Grid.Row="1" Margin="20">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="320"/>
+                    <ColumnDefinition Width="20"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Sidebar -->
+                <Border Grid.Column="0"
+                        Background="{DynamicResource PanelBg}"
+                        CornerRadius="12"
+                        BorderBrush="{DynamicResource Border}"
+                        BorderThickness="1"
+                        Padding="20">
+
+                    <DockPanel>
+                        <!-- Header Section -->
+                        <StackPanel DockPanel.Dock="Top" Margin="0,0,0,24">
+                            <Grid Margin="0,0,0,20">
+                                <TextBlock Text="Notas" FontSize="24" FontWeight="Bold" VerticalAlignment="Center"/>
+                                <Button HorizontalAlignment="Right"
+                                        Style="{StaticResource IconButton}"
+                                        Content="{StaticResource IconPlus}"
+                                        ToolTip="Nueva nota"
+                                        Command="{Binding NewNoteCommand}"/>
+                            </Grid>
+
+                            <!-- Search Box -->
+                            <Border Background="{DynamicResource ControlBg}" 
+                                    BorderBrush="{DynamicResource Border}"
+                                    BorderThickness="1"
+                                    CornerRadius="8" 
+                                    Height="42">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="44"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Path Data="{StaticResource IconSearch}" 
+                                          Fill="{DynamicResource TextMuted}" 
+                                          Stretch="Uniform" 
+                                          Width="16" Height="16" 
+                                          HorizontalAlignment="Center" 
+                                          VerticalAlignment="Center"/>
+
+                                    <TextBox Grid.Column="1"
+                                             Background="Transparent"
+                                             BorderThickness="0"
+                                             Foreground="{DynamicResource TextMain}"
+                                             VerticalContentAlignment="Center"
+                                             Padding="0,0,12,0"
+                                             Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"/>
+                                </Grid>
+                            </Border>
+                        </StackPanel>
+
+                        <!-- Notes List -->
+                        <ListBox ItemsSource="{Binding FilteredNotes}"
+                                 SelectedItem="{Binding SelectedNote}"
+                                 Background="Transparent"
+                                 BorderThickness="0"
+                                 ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Background="{DynamicResource CardBg}" 
+                                            BorderBrush="{DynamicResource Border}"
+                                            BorderThickness="1"
+                                            CornerRadius="8" 
+                                            Padding="14" 
+                                            Margin="0,0,0,8">
+                                        <Grid>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                            </Grid.RowDefinitions>
+                                            <TextBlock Text="{Binding Title}" 
+                                                      FontWeight="SemiBold" 
+                                                      FontSize="15" 
+                                                      TextTrimming="CharacterEllipsis"
+                                                      Margin="0,0,0,6"/>
+                                            <TextBlock Grid.Row="1" 
+                                                      Text="{Binding UpdatedAt}" 
+                                                      Foreground="{DynamicResource TextMuted}" 
+                                                      FontSize="12"/>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </DockPanel>
+                </Border>
+
+                <!-- Main Editor Panel -->
+                <Border Grid.Column="2"
+                        Background="{DynamicResource PanelBg}"
+                        BorderBrush="{DynamicResource Border}"
+                        BorderThickness="1"
+                        CornerRadius="12"
+                        Padding="24">
+
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- Note Header -->
+                        <Grid Grid.Row="0" Margin="0,0,0,20">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBox Text="{Binding SelectedNote.Title, UpdateSourceTrigger=PropertyChanged}"
+                                     FontSize="26" 
+                                     FontWeight="Bold"
+                                     Background="Transparent"
+                                     BorderThickness="0"
+                                     Padding="0"
+                                     VerticalAlignment="Center"/>
+
+                            <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="10,0,0,0">
+                                <Button Style="{StaticResource IconButton}" 
+                                        Content="{StaticResource IconMore}" 
+                                        ToolTip="Más opciones"
+                                        Margin="0,0,6,0"/>
+                                <Button Style="{StaticResource DangerIconButton}" 
+                                        Content="{StaticResource IconTrash}" 
+                                        ToolTip="Eliminar nota"
+                                        Command="{Binding DeleteNoteCommand}"/>
+                            </StackPanel>
+                        </Grid>
+
+                        <Separator Grid.Row="0" 
+                                  VerticalAlignment="Bottom" 
+                                  Background="{DynamicResource Border}" 
+                                  Height="1"
+                                  Margin="0,0,0,-10"/>
+
+                        <!-- Content and Todos Section -->
+                        <Grid Grid.Row="1" Margin="0,20,0,0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="280"/>
+                            </Grid.RowDefinitions>
+
+                            <!-- Note Content -->
+                            <ScrollViewer Grid.Row="0" 
+                                        VerticalScrollBarVisibility="Auto"
+                                        HorizontalScrollBarVisibility="Disabled">
+                                <TextBox Text="{Binding SelectedNote.Content, UpdateSourceTrigger=PropertyChanged}"
+                                         AcceptsReturn="True"
+                                         TextWrapping="Wrap"
+                                         Background="Transparent"
+                                         BorderThickness="0"
+                                         Padding="0"
+                                         FontSize="15"
+                                        />
+                            </ScrollViewer>
+
+                            <!-- Separator -->
+                            <Border Grid.Row="1" 
+                                   Background="{DynamicResource Border}" 
+                                   Height="1" 
+                                   Margin="0,20"/>
+
+                            <!-- Todos Section -->
+                            <Grid Grid.Row="2" Margin="0,20,0,0">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <Grid Margin="0,0,0,16">
+                                    <TextBlock Text="TAREAS PENDIENTES" 
+                                              FontSize="12" 
+                                              FontWeight="Bold" 
+                                              Foreground="{DynamicResource TextMuted}"/>
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                        <TextBlock Text="{Binding CompletedTodosCount}" 
+                                                  FontSize="12" 
+                                                  Foreground="{DynamicResource Success}"
+                                                  FontWeight="SemiBold"/>
+                                        <TextBlock Text="/" 
+                                                  FontSize="12" 
+                                                  Foreground="{DynamicResource TextMuted}"
+                                                  Margin="4,0"/>
+                                        <TextBlock Text="{Binding TotalTodosCount}" 
+                                                  FontSize="12" 
+                                                  Foreground="{DynamicResource TextMuted}"/>
+                                    </StackPanel>
+                                </Grid>
+
+                                <!-- Todos List -->
+                                <ListBox Grid.Row="1"
+                                         ItemsSource="{Binding SelectedNoteTodos}"
+                                         Background="Transparent"
+                                         BorderThickness="0"
+                                         ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                                    <ListBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border Background="{DynamicResource CardBg}" 
+                                                    BorderBrush="{DynamicResource Border}"
+                                                    BorderThickness="1"
+                                                    CornerRadius="6" 
+                                                    Padding="12" 
+                                                    Margin="0,0,0,8">
+                                                <DockPanel>
+                                                    <CheckBox IsChecked="{Binding IsDone}" 
+                                                             VerticalAlignment="Center" 
+                                                             Margin="0,0,12,0"/>
+
+                                                    <Button DockPanel.Dock="Right" 
+                                                            Style="{StaticResource DangerIconButton}" 
+                                                            Content="{StaticResource IconClose}"
+                                                            Width="28" Height="28"
+                                                            ToolTip="Eliminar tarea"
+                                                            Command="{Binding DataContext.DeleteTodoCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                            CommandParameter="{Binding}"/>
+
+                                                    <TextBox Text="{Binding Text, UpdateSourceTrigger=PropertyChanged}"
+                                                             Background="Transparent" 
+                                                             BorderThickness="0" 
+                                                             Padding="0"
+                                                             VerticalAlignment="Center" 
+                                                             FontSize="14"/>
+                                                </DockPanel>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ListBox.ItemTemplate>
+                                </ListBox>
+
+                                <!-- Add Todo -->
+                                <Grid Grid.Row="2" Margin="0,12,0,0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBox Grid.Column="0" 
+                                            Height="42" 
+                                            Text="{Binding NewTodoText, UpdateSourceTrigger=PropertyChanged}"
+                                            VerticalContentAlignment="Center"
+                                            Tag="Nueva tarea..."/>
+                                    <Button Grid.Column="1" 
+                                           Style="{StaticResource PrimaryButton}" 
+                                           Content="Agregar" 
+                                           Height="42" 
+                                           Margin="12,0,0,0"
+                                           Command="{Binding AddTodoCommand}"/>
+                                </Grid>
+                            </Grid>
+                        </Grid>
+
+                        <!-- Footer -->
+                        <TextBlock Grid.Row="2"
+                                   Text="{Binding SelectedNote.UpdatedAt, StringFormat='Última edición: {0}'}"
+                                   Foreground="{DynamicResource TextMuted}" 
+                                   FontSize="12" 
+                                   HorizontalAlignment="Right" 
+                                   Margin="0,16,0,0"/>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Grid>
+    </Border>
 </Window>
