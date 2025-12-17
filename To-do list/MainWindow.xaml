@@ -607,7 +607,7 @@
                                      Background="Transparent"
                                      BorderThickness="0"
                                      Padding="0"
-                                     VerticalAlignment="Center"/>
+                                     VerticalAlignment="Center" TextChanged="TextBox_TextChanged"/>
 
                             <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="10,0,0,0">
                                 <Button Style="{StaticResource IconButton}" 
@@ -725,7 +725,8 @@
                                 <!-- Add Todo -->
                                 <Grid Grid.Row="2" Margin="0,12,0,0">
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="421*"/>
+                                        <ColumnDefinition Width="347*"/>
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
 
@@ -733,13 +734,12 @@
                                             Height="42" 
                                             Text="{Binding NewTodoText, UpdateSourceTrigger=PropertyChanged}"
                                             VerticalContentAlignment="Center"
-                                            Tag="Nueva tarea..."/>
-                                    <Button Grid.Column="1" 
+                                            Tag="Nueva tarea..." Grid.ColumnSpan="2" Margin="0,0,111,0"/>
+                                    <Button 
                                            Style="{StaticResource PrimaryButton}" 
                                            Content="Agregar" 
-                                           Height="42" 
-                                           Margin="12,0,0,0"
-                                           Command="{Binding AddTodoCommand}"/>
+                                           Margin="241,2,0,0"
+                                           Command="{Binding AddTodoCommand}" Grid.Column="1"/>
                                 </Grid>
                             </Grid>
                         </Grid>

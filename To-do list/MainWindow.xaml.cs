@@ -36,5 +36,10 @@ namespace To_do_list
         {
             Close();
         }
+
+        private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+
+        }
     }
 }
