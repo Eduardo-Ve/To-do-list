@@ -1,20 +1,21 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace To_do_list;
-
-public class ObservableObject : INotifyPropertyChanged
+namespace To_do_list.ViewModels
 {
-    public event PropertyChangedEventHandler? PropertyChanged;
-
-    protected bool SetProperty<T>(ref T field, T value, [CallerMemberName] string? name = null)
+    public class ObservableObject : INotifyPropertyChanged
     {
-        if (EqualityComparer<T>.Default.Equals(field, value))
-            return false;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
-        field = value;
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-        return true;
+        protected void OnPropertyChanged([CallerMemberName] string? name = null)
+            => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+
+        protected bool SetProperty<T>(ref T field, T value, [CallerMemberName] string? name = null)
+        {
+            if (Equals(field, value)) return false;
+            field = value;
+            OnPropertyChanged(name);
+            return true;
+        }
     }
 }

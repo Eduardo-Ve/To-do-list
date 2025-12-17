@@ -1,24 +1,45 @@
 ﻿using System;
 using System.Windows.Input;
 
-namespace To_do_list;
-
-public class RelayCommand : ICommand
+namespace To_do_list.ViewModels
 {
-    private readonly Action<object?> _execute;
-    private readonly Func<object?, bool>? _canExecute;
-
-    public RelayCommand(Action<object?> execute, Func<object?, bool>? canExecute = null)
+    public class RelayCommand : ICommand
     {
-        _execute = execute;
-        _canExecute = canExecute;
+        private readonly Action _execute;
+        private readonly Func<bool>? _canExecute;
+
+        public RelayCommand(Action execute, Func<bool>? canExecute = null)
+        {
+            _execute = execute;
+            _canExecute = canExecute;
+        }
+
+        public event EventHandler? CanExecuteChanged;
+
+        public bool CanExecute(object? parameter) => _canExecute?.Invoke() ?? true;
+
+        public void Execute(object? parameter) => _execute();
+
+        public void RaiseCanExecuteChanged() => CanExecuteChanged?.Invoke(this, EventArgs.Empty);
     }
 
-    public bool CanExecute(object? parameter) => _canExecute?.Invoke(parameter) ?? true;
-    public void Execute(object? parameter) => _execute(parameter);
+    public class RelayCommand<T> : ICommand where T : class
+    {
+        private readonly Action<T?> _execute;
+        private readonly Func<T?, bool>? _canExecute;
 
-    public event EventHandler? CanExecuteChanged;
+        public RelayCommand(Action<T?> execute, Func<T?, bool>? canExecute = null)
+        {
+            _execute = execute;
+            _canExecute = canExecute;
+        }
 
-    public void RaiseCanExecuteChanged()
-        => CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+        public event EventHandler? CanExecuteChanged;
+
+        public bool CanExecute(object? parameter) => _canExecute?.Invoke(parameter as T) ?? true;
+
+        public void Execute(object? parameter) => _execute(parameter as T);
+
+        public void RaiseCanExecuteChanged() => CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+    }
 }

@@ -1,27 +1,23 @@
-﻿using System.Text;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
+﻿using System.Windows;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using To_do_list.ViewModels;
-
 
 namespace To_do_list
 {
     public partial class MainWindow : Window
     {
+        private MainViewModel ViewModel => (MainViewModel)DataContext;
+
         public MainWindow()
         {
             InitializeComponent();
             DataContext = new MainViewModel();
 
+            // Guardar al cerrar la ventana
+            Closing += (s, e) => ViewModel.SaveOnExit();
         }
 
+        // ✅ Window Control Buttons
         private void MinimizeWindow(object sender, RoutedEventArgs e)
         {
             WindowState = WindowState.Minimized;
@@ -29,7 +25,7 @@ namespace To_do_list
 
         private void MaximizeWindow(object sender, RoutedEventArgs e)
         {
-            WindowState = (WindowState == WindowState.Maximized)
+            WindowState = WindowState == WindowState.Maximized
                 ? WindowState.Normal
                 : WindowState.Maximized;
         }
@@ -39,31 +35,36 @@ namespace To_do_list
             Close();
         }
 
-        private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
+        // ✅ Note Editor Events - Guardar cuando pierde el foco
+        private void NoteEditor_LostFocus(object sender, RoutedEventArgs e)
         {
-
+            ViewModel.TouchSelected();
         }
 
-        private void TextBox_TextChanged_1(object sender, TextChangedEventArgs e)
+        // ✅ Todo Events
+        private void TodoCheckBox_Changed(object sender, RoutedEventArgs e)
         {
-
+            ViewModel.TouchSelected();
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void TodoText_LostFocus(object sender, RoutedEventArgs e)
         {
-
+            ViewModel.TouchSelected();
         }
 
-        private void TextBox_TextChanged_2(object sender, TextChangedEventArgs e)
+        // ✅ Permitir Enter para agregar todo
+        private void NewTodoTextBox_KeyDown(object sender, KeyEventArgs e)
         {
-            // asignar un nombre default si el título está vacío
-            if (DataContext is MainViewModel vm && vm.SelectedNote != null)
+            if (e.Key == Key.Enter && ViewModel.AddTodoCommand.CanExecute(null))
             {
-                if (string.IsNullOrWhiteSpace(vm.SelectedNote.Title))
-                {
-                    vm.SelectedNote.Title = "Nota sin título";
-                }
+                ViewModel.AddTodoCommand.Execute(null);
+                e.Handled = true;
             }
+        }
+
+        private void NewTodoTextBox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+        {
+
         }
     }
 }

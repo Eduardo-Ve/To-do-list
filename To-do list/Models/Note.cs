@@ -1,18 +1,36 @@
-﻿namespace To_do_list.models
+﻿using System;
+using System.Collections.ObjectModel;
+using To_do_list.ViewModels;
+
+namespace To_do_list.models
 {
-    public class Note
+    public class Note : ObservableObject
     {
         public Guid Id { get; set; } = Guid.NewGuid();
-        public string Title { get; set; } = "Nueva Nota";
-        public string Content { get; set; } = string.Empty;
+
+        private string _title = "Nueva nota";
+        public string Title
+        {
+            get => _title;
+            set => SetProperty(ref _title, value);
+        }
+
+        private string _content = "";
+        public string Content
+        {
+            get => _content;
+            set => SetProperty(ref _content, value);
+        }
+
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
-        public Note() { }
-        public Note(string title, string content)
+        private DateTime _updatedAt = DateTime.Now;
+        public DateTime UpdatedAt
         {
-            Title = title;
-            Content = content;
-            CreatedAt = DateTime.Now;
+            get => _updatedAt;
+            set => SetProperty(ref _updatedAt, value);
         }
+
+        public ObservableCollection<TodoItem> Todos { get; set; } = new();
     }
 }

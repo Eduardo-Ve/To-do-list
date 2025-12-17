@@ -510,10 +510,13 @@
                             <Grid Margin="0,0,0,20">
                                 <TextBlock Text="Notas" FontSize="20" FontWeight="Bold" VerticalAlignment="Center"/>
                                 <Button HorizontalAlignment="Left"
-                                        Style="{StaticResource IconButton}"
-                                        Content="{StaticResource IconPlus}"
-                                        ToolTip="Nueva nota"
-                                        Command="{Binding NewNoteCommand}" Height="36" Margin="202,0,0,0" VerticalAlignment="Bottom"/>
+                                    Style="{StaticResource IconButton}"
+                                    Content="{StaticResource IconPlus}"
+                                    ToolTip="Nueva nota"
+                                    Command="{Binding AddNoteCommand}"
+                                    Height="36"
+                                    Margin="202,0,0,0"
+                                    VerticalAlignment="Bottom"/>
                             </Grid>
 
                             <!-- Search Box -->
@@ -540,20 +543,17 @@
                                              Foreground="{DynamicResource TextMain}"
                                              VerticalContentAlignment="Center"
                                              Padding="0,0,12,0"
-                                             Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
-                                             />
-                                    <!-- centrar el texto dentro del textbox -->
-
+                                             Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"/>
                                 </Grid>
                             </Border>
                         </StackPanel>
 
                         <!-- Notes List -->
                         <ListBox ItemsSource="{Binding FilteredNotes}"
-                                 SelectedItem="{Binding SelectedNote}"
-                                 Background="Transparent"
-                                 BorderThickness="0"
-                                 ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                             SelectedItem="{Binding SelectedNote}"
+                             Background="Transparent"
+                             BorderThickness="0"
+                             ScrollViewer.HorizontalScrollBarVisibility="Disabled">
 
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
@@ -572,10 +572,11 @@
                                                       FontWeight="SemiBold" 
                                                       FontSize="14" 
                                                       TextTrimming="CharacterEllipsis"
+                                                       Foreground="White"
                                                       Margin="0,0,0,6"/>
                                             <TextBlock Grid.Row="1" 
                                                       Text="{Binding UpdatedAt}" 
-                                                      Foreground="{DynamicResource TextMuted}" 
+                                                      Foreground="white" 
                                                       FontSize="11"/>
                                         </Grid>
                                     </Border>
@@ -640,7 +641,9 @@
                                         <DockPanel>
                                             <CheckBox IsChecked="{Binding IsDone}" 
                                                      VerticalAlignment="Center" 
-                                                     Margin="0,0,12,0"/>
+                                                     Margin="0,0,12,0"
+                                                     Checked="TodoCheckBox_Changed"
+                                                     Unchecked="TodoCheckBox_Changed"/>
 
                                             <Button DockPanel.Dock="Right" 
                                                     Style="{StaticResource DangerIconButton}" 
@@ -651,11 +654,12 @@
                                                     CommandParameter="{Binding}"/>
 
                                             <TextBox Text="{Binding Text, UpdateSourceTrigger=PropertyChanged}"
-                                                     Background="Transparent" 
-                                                     BorderThickness="0" 
+                                                     FontSize="14"
+                                                     Background="Transparent"
+                                                     BorderThickness="0"
                                                      Padding="0"
-                                                     VerticalAlignment="Center" 
-                                                     FontSize="14"/>
+                                                     VerticalAlignment="Center"
+                                                     LostFocus="TodoText_LostFocus"/>
                                         </DockPanel>
                                     </Border>
                                 </DataTemplate>
@@ -665,22 +669,21 @@
                         <!-- Add Todo -->
                         <Grid Grid.Row="2">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="10"/>
-                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition Width="0"/>
+                                <ColumnDefinition Width="Auto" MinWidth="10"/>
                             </Grid.ColumnDefinitions>
 
                             <TextBox Grid.Column="0" 
-                                    Height="42" 
                                     Text="{Binding NewTodoText, UpdateSourceTrigger=PropertyChanged}"
                                     VerticalContentAlignment="Center"
-                                    Tag="Nueva tarea..." Margin="0,0,73,0"/>
+                                    x:Name="NewTodoTextBox"
+                                    KeyDown="NewTodoTextBox_KeyDown" TextChanged="NewTodoTextBox_TextChanged" Margin="1,0,87,0"/>
 
                             <Button
                                    Style="{StaticResource PrimaryButton}" 
-                                   Content="Agregar" 
-                                   Height="42"
-                                   Command="{Binding AddTodoCommand}" Grid.ColumnSpan="3" Margin="200,0,0,0"/>
+                                   Content="Agregar"
+                                   Command="{Binding AddTodoCommand}" Grid.ColumnSpan="3" Margin="186,0,0,0"/>
                         </Grid>
                     </Grid>
                 </Border>
@@ -713,18 +716,14 @@
                                      Background="Transparent"
                                      BorderThickness="0"
                                      Padding="0"
-                                     VerticalAlignment="Center" TextChanged="TextBox_TextChanged_2"/>
+                                     VerticalAlignment="Center"
+                                     LostFocus="NoteEditor_LostFocus"/>
 
                             <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="10,0,0,0">
-                                <Button Style="{StaticResource IconButton}" 
-                                        Content="{StaticResource IconMore}" 
-                                        Command="{Binding NewNoteCommand}"
-                                        ToolTip="Más opciones"
-                                        Margin="0,0,6,0"/>
                                 <Button Style="{StaticResource DangerIconButton}" 
                                         Content="{StaticResource IconTrash}" 
                                         ToolTip="Eliminar nota"
-                                        Command="{Binding DeleteNoteCommand}"/>
+                                        Command="{Binding DeleteSelectedCommand}"/>
                             </StackPanel>
                         </Grid>
 
@@ -746,7 +745,8 @@
                                      BorderThickness="0"
                                      Padding="0"
                                      FontSize="15"
-                                     MinHeight="400"/>
+                                     MinHeight="400"
+                                     LostFocus="NoteEditor_LostFocus"/>
                         </ScrollViewer>
 
                         <!-- Footer -->
