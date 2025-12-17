@@ -18,6 +18,8 @@ namespace To_do_list
         public MainWindow()
         {
             InitializeComponent();
+            DataContext = new MainViewModel();
+
         }
 
         private void MinimizeWindow(object sender, RoutedEventArgs e)

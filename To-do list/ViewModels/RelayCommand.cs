@@ -1,6 +1,7 @@
-﻿using System.Windows.Input;
+﻿using System;
+using System.Windows.Input;
 
-namespace To_do_list.ViewModels;
+namespace To_do_list;
 
 public class RelayCommand : ICommand
 {
@@ -14,10 +15,10 @@ public class RelayCommand : ICommand
     }
 
     public bool CanExecute(object? parameter) => _canExecute?.Invoke(parameter) ?? true;
-
     public void Execute(object? parameter) => _execute(parameter);
 
     public event EventHandler? CanExecuteChanged;
 
-    public void RaiseCanExecuteChanged() => CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+    public void RaiseCanExecuteChanged()
+        => CanExecuteChanged?.Invoke(this, EventArgs.Empty);
 }

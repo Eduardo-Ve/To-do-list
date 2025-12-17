@@ -1,6 +1,6 @@
 ﻿using System.Collections.ObjectModel;
+using System.Linq;                 // <-- IMPORTANTE
 using System.Windows.Input;
-using System.Xml.Linq;
 using To_do_list.models;
 
 namespace To_do_list.ViewModels;
@@ -13,7 +13,14 @@ public class MainViewModel : ObservableObject
     public Note? SelectedNote
     {
         get => _selectedNote;
-        set => SetProperty(ref _selectedNote, value);
+        set
+        {
+            if (SetProperty(ref _selectedNote, value))
+            {
+                // si tienes botones que dependen de SelectedNote != null
+                (DeleteNoteCommand as RelayCommand)?.RaiseCanExecuteChanged();
+            }
+        }
     }
 
     public ICommand NewNoteCommand { get; }
@@ -21,13 +28,13 @@ public class MainViewModel : ObservableObject
 
     public MainViewModel()
     {
+        NewNoteCommand = new RelayCommand(_ => NewNote());
+        DeleteNoteCommand = new RelayCommand(_ => DeleteSelected(), _ => SelectedNote != null);
+
         // Datos demo
         Notes.Add(new Note { Title = "Bienvenido", Content = "Primera nota 👋" });
         Notes.Add(new Note { Title = "Checklist", Content = "Luego agregamos tareas aquí." });
         SelectedNote = Notes.FirstOrDefault();
-
-        NewNoteCommand = new RelayCommand(_ => NewNote());
-        DeleteNoteCommand = new RelayCommand(_ => DeleteSelected(), _ => SelectedNote != null);
     }
 
     private void NewNote()
@@ -40,6 +47,7 @@ public class MainViewModel : ObservableObject
     private void DeleteSelected()
     {
         if (SelectedNote == null) return;
+
         var toRemove = SelectedNote;
         Notes.Remove(toRemove);
         SelectedNote = Notes.FirstOrDefault();
